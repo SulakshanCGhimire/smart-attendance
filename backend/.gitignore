@@ -75,3 +75,7 @@ temp/
 
 # build output
 out/
+
+# pycache
+__pycache__/
+*.pyc  
