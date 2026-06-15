@@ -2,7 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 from app.config import Config
 from app.routes.auth import auth_bp
-from app.routes.users import users_bp 
+from app.routes.users import users_bp
+from app.routes.faces import faces_bp 
 
 def create_app():
     app = Flask(__name__)
@@ -11,6 +12,7 @@ def create_app():
     CORS(app, resources={r"/api/*": {"origins": "*"}})
 
     app.register_blueprint(auth_bp)
-    app.register_blueprint(users_bp) 
+    app.register_blueprint(users_bp)
+    app.register_blueprint(faces_bp) 
 
     return app
