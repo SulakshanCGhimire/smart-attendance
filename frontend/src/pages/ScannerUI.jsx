@@ -13,7 +13,6 @@ const ScannerUI = () => {
   const getInitials = (name) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
   const captureAndSend = useCallback(async () => {
-    // Prevent capturing if it's already processing or succeeding
     if (status !== 'AUTHENTICATING...' || !webcamRef.current) return;
 
     const imageSrc = webcamRef.current.getScreenshot();
@@ -50,12 +49,9 @@ const ScannerUI = () => {
 
       setTimeout(resetScanner, 4000);
     } catch (error) {
-      // If it's just "No face detected", silently fail and keep trying. 
-      // If it's "Unknown face", show the error.
       const errorMsg = error.response?.data?.error || '';
-      
       if (errorMsg.includes("No face detected")) {
-         resetScanner(); // Silently reset to keep looping
+         resetScanner(); 
       } else {
          setStatus('FAILED');
          setSubMessage(errorMsg || 'Recognition failed.');
@@ -69,11 +65,9 @@ const ScannerUI = () => {
     setSubMessage('Please look at the camera');
   };
 
-  // The Auto-Scan Loop
   useEffect(() => {
     let interval;
     if (status === 'AUTHENTICATING...') {
-      // Try to capture a frame every 3 seconds
       interval = setInterval(() => {
         captureAndSend();
       }, 3000);
@@ -92,18 +86,16 @@ const ScannerUI = () => {
       </header>
 
       <div className="dashboard-grid">
-        {/* LEFT COLUMN */}
         <div className="left-column">
           <div className="scanner-card">
             <div className="live-badge"><span className="dot"></span> LIVE</div>
-            
             <div className="webcam-wrapper">
               <Webcam 
                 audio={false} 
                 ref={webcamRef} 
                 screenshotFormat="image/jpeg" 
                 className="webcam-feed"
-                videoConstraints={{ facingMode: "user" }} // Removed aspectRatio hardware constraint
+                videoConstraints={{ facingMode: "user" }} 
               />
               <div className="scanner-overlay">
                 <div className="corner top-left"></div>
@@ -112,7 +104,6 @@ const ScannerUI = () => {
                 <div className="corner bottom-right"></div>
               </div>
             </div>
-
             <div className="status-banner">
               <p>STATUS: <span className={status === 'SUCCESS' ? 'text-green' : status === 'FAILED' ? 'text-red' : 'text-blue'}>{status}</span></p>
               <small>{subMessage}</small>
@@ -147,7 +138,6 @@ const ScannerUI = () => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN */}
         <div className="right-column">
           <div className="activity-card">
             <div className="activity-header">
