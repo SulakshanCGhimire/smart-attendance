@@ -154,18 +154,18 @@ const AdminDashboard = () => {
         {activeTab === 'settings' && (
           <div className="settings-container">
             <div className="settings-card">
-              <h3>AI Recognition Settings</h3>
+              <h3>Scanner & Voice Settings</h3>
               <div className="form-group">
-                <label>Match Tolerance (Lower = Stricter)</label>
+                <label>Face Recognition Strictness (Lower = Stricter, Default: 0.5)</label>
                 <input type="number" step="0.1" defaultValue="0.5" />
               </div>
               <div className="form-group">
-                <label>Kiosk Auto-Scan Interval (ms)</label>
+                <label>Time Between Camera Scans (in milliseconds)</label>
                 <input type="number" defaultValue="3000" />
               </div>
               <div className="form-group row">
                 <input type="checkbox" id="voiceToggle" defaultChecked />
-                <label htmlFor="voiceToggle">Enable Voice Feedback Engine (pyttsx3)</label>
+                <label htmlFor="voiceToggle">Enable Voice Greetings</label>
               </div>
               <button className="save-btn mt-2">Save Configuration</button>
             </div>
