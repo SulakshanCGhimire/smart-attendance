@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
 import './AdminDashboard.css';
@@ -10,17 +10,29 @@ const UserIcon = () => (
   </svg>
 );
 
-const mockStats = { total: 150, present: 142, absent: 5, late: 3 };
-const mockLogs = [
-  { id: 1, name: 'Siddhanta Shrestha', date: '2026-06-16', time: '09:02 AM', status: 'Present' },
-  { id: 2, name: 'Subikhyat Acharya', date: '2026-06-16', time: '08:58 AM', status: 'Present' },
-  { id: 3, name: 'Saroj Baral', date: '2026-06-16', time: '08:55 AM', status: 'Present' },
-  { id: 4, name: 'Sulakshan Ghimire', date: '2026-06-16', time: '08:20 AM', status: 'Late' }
-];
-
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   
+  // State for real data
+  const [stats, setStats] = useState({ total: 0, present: 0, absent: 0, late: 0 });
+  const [logs, setLogs] = useState([]);
+
+  // Fetch live data from Flask
+  useEffect(() => {
+    if (activeTab === 'overview') {
+      const fetchDailyData = async () => {
+        try {
+          const res = await axios.get('http://localhost:5000/api/admin/daily-stats');
+          setStats(res.data.stats);
+          setLogs(res.data.logs);
+        } catch (err) {
+          console.error("Failed to fetch dashboard data:", err);
+        }
+      };
+      fetchDailyData();
+    }
+  }, [activeTab]);
+
   // Registration State
   const webcamRef = useRef(null);
   const [regUserId, setRegUserId] = useState('');
@@ -86,10 +98,10 @@ const AdminDashboard = () => {
         {activeTab === 'overview' && (
           <>
             <div className="stats-grid">
-              <div className="stat-card"><h3>Total Students</h3><p className="stat-number text-blue">{mockStats.total}</p></div>
-              <div className="stat-card"><h3>Present</h3><p className="stat-number text-green">{mockStats.present}</p></div>
-              <div className="stat-card"><h3>Late</h3><p className="stat-number text-orange">{mockStats.late}</p></div>
-              <div className="stat-card"><h3>Absent</h3><p className="stat-number text-red">{mockStats.absent}</p></div>
+              <div className="stat-card"><h3>Total Students</h3><p className="stat-number text-blue">{stats.total}</p></div>
+              <div className="stat-card"><h3>Present</h3><p className="stat-number text-green">{stats.present}</p></div>
+              <div className="stat-card"><h3>Late</h3><p className="stat-number text-orange">{stats.late}</p></div>
+              <div className="stat-card"><h3>Absent</h3><p className="stat-number text-red">{stats.absent}</p></div>
             </div>
 
             <div className="table-container">
@@ -100,7 +112,7 @@ const AdminDashboard = () => {
               <table className="admin-table">
                 <thead><tr><th>Log ID</th><th>Student Name</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
                 <tbody>
-                  {mockLogs.map(log => (
+                  {logs.map(log => (
                     <tr key={log.id}>
                       <td>#{log.id}</td><td className="fw-bold">{log.name}</td><td>{log.date}</td><td>{log.time}</td>
                       <td><span className={`status-badge ${log.status.toLowerCase()}`}>{log.status}</span></td>

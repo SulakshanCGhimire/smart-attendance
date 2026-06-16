@@ -4,7 +4,8 @@ from app.config import Config
 from app.routes.auth import auth_bp
 from app.routes.users import users_bp
 from app.routes.faces import faces_bp
-from app.routes.recognition import recognition_bp 
+from app.routes.recognition import recognition_bp
+from app.routes.admin import admin_bp 
 
 def create_app():
     app = Flask(__name__)
@@ -15,6 +16,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(faces_bp)
-    app.register_blueprint(recognition_bp) 
+    app.register_blueprint(recognition_bp)
+    app.register_blueprint(admin_bp) 
 
     return app
