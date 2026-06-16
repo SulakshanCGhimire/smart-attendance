@@ -3,6 +3,13 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import './ScannerUI.css';
 
+const UserIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '55%', height: '55%' }}>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+);
+
 const ScannerUI = () => {
   const webcamRef = useRef(null);
   const [status, setStatus] = useState('AUTHENTICATING...');
@@ -50,6 +57,7 @@ const ScannerUI = () => {
       setTimeout(resetScanner, 4000);
     } catch (error) {
       const errorMsg = error.response?.data?.error || '';
+      
       if (errorMsg.includes("No face detected")) {
          resetScanner(); 
       } else {
@@ -65,6 +73,7 @@ const ScannerUI = () => {
     setSubMessage('Please look at the camera');
   };
 
+  // Auto-Scan Loop
   useEffect(() => {
     let interval;
     if (status === 'AUTHENTICATING...') {
@@ -78,7 +87,7 @@ const ScannerUI = () => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <div className="logo-icon">8</div>
+        <div className="logo-icon"><UserIcon /></div>
         <div>
           <h1>SMART ATTENDANCE SYSTEM</h1>
           <h2>FACE RECOGNITION ATTENDANCE</h2>
@@ -86,9 +95,11 @@ const ScannerUI = () => {
       </header>
 
       <div className="dashboard-grid">
+        {/* LEFT COLUMN */}
         <div className="left-column">
           <div className="scanner-card">
             <div className="live-badge"><span className="dot"></span> LIVE</div>
+            
             <div className="webcam-wrapper">
               <Webcam 
                 audio={false} 
@@ -104,6 +115,7 @@ const ScannerUI = () => {
                 <div className="corner bottom-right"></div>
               </div>
             </div>
+
             <div className="status-banner">
               <p>STATUS: <span className={status === 'SUCCESS' ? 'text-green' : status === 'FAILED' ? 'text-red' : 'text-blue'}>{status}</span></p>
               <small>{subMessage}</small>
@@ -121,7 +133,7 @@ const ScannerUI = () => {
               </div>
             </div>
             <div className="result-info">
-              <div className="icon user-icon">8</div>
+              <div className="icon user-icon"><UserIcon /></div>
               <div>
                 <h4>NAME</h4>
                 <p>{lastScan ? lastScan.name : "---"}</p>
@@ -138,6 +150,7 @@ const ScannerUI = () => {
           </div>
         </div>
 
+        {/* RIGHT COLUMN */}
         <div className="right-column">
           <div className="activity-card">
             <div className="activity-header">

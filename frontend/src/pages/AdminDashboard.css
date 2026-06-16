@@ -1,0 +1,98 @@
+.admin-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: #0b1120;
+  color: #a0aec0;
+  font-family: 'Inter', sans-serif;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+  width: 260px;
+  background-color: #111827;
+  border-right: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem;
+}
+
+.sidebar-brand { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+.sidebar-brand h2 { font-family: 'Teko', sans-serif; color: #fff; font-size: 1.8rem; margin: 0; letter-spacing: 1px;}
+.logo-icon-small { width: 35px; height: 35px; border: 2px solid #00f6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #00f6ff; font-weight: bold;}
+
+.sidebar-nav { display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.sidebar-nav button { background: none; border: none; color: #a0aec0; text-align: left; padding: 1rem; border-radius: 8px; cursor: pointer; font-size: 1rem; transition: 0.2s; display: flex; gap: 10px;}
+.sidebar-nav button:hover { background-color: #1f2937; color: #fff; }
+.sidebar-nav button.active { background-color: #00f6ff20; color: #00f6ff; border-left: 4px solid #00f6ff; }
+
+.sidebar-footer { margin-top: auto; }
+.logout-btn { width: 100%; padding: 1rem; background-color: transparent; border: 1px solid #ef4444; color: #ef4444; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.logout-btn:hover { background-color: #ef4444; color: #000; }
+
+/* MAIN CONTENT */
+.admin-main { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; gap: 2rem; }
+
+.main-header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #1f2937; padding-bottom: 1rem; }
+.main-header h1 { font-family: 'Teko', sans-serif; font-size: 2.5rem; color: #fff; margin: 0; letter-spacing: 1px; }
+.date-display { margin: 0; color: #6b7280; font-weight: 600; }
+
+/* STATS GRID */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+.stat-card { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; text-align: center; }
+.stat-card h3 { margin: 0 0 0.5rem 0; font-size: 0.9rem; color: #6b7280; text-transform: uppercase; letter-spacing: 1px; }
+.stat-number { margin: 0; font-size: 2.5rem; font-weight: bold; font-family: 'Teko', sans-serif; }
+
+/* TABLE */
+.table-container { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 1.5rem; flex: 1; }
+.table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.table-header h3 { margin: 0; color: #fff; }
+.export-btn { background-color: #1f2937; color: #fff; border: 1px solid #374151; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+.export-btn:hover { background-color: #374151; }
+
+.admin-table { width: 100%; border-collapse: collapse; text-align: left; }
+.admin-table th { padding: 1rem; border-bottom: 2px solid #1f2937; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+.admin-table td { padding: 1rem; border-bottom: 1px solid #1f2937; color: #d1d5db; }
+.fw-bold { font-weight: bold; color: #fff !important; }
+
+/* BADGES */
+.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+.status-badge.present { background-color: #10b98120; color: #10b981; border: 1px solid #10b981; }
+.status-badge.late { background-color: #f59e0b20; color: #f59e0b; border: 1px solid #f59e0b; }
+.status-badge.absent { background-color: #ef444420; color: #ef4444; border: 1px solid #ef4444; }
+
+.placeholder-card { background-color: #111827; border: 1px dashed #374151; border-radius: 12px; padding: 3rem; text-align: center; }
+
+/* COLOR UTILS */
+.text-blue { color: #00f6ff; }
+.text-green { color: #10b981; }
+.text-orange { color: #f59e0b; }
+.text-red { color: #ef4444; }
+
+/* REGISTRATION TAB */
+.register-container { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 2rem; }
+.register-form { display: flex; flex-direction: column; }
+.register-form h3, .register-camera h3 { color: #fff; margin-top: 0; margin-bottom: 1.5rem; font-family: 'Teko', sans-serif; font-size: 1.5rem; letter-spacing: 1px; }
+
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; }
+.form-group.row { flex-direction: row; align-items: center; gap: 1rem; }
+.form-group label { color: #9ca3af; font-size: 0.9rem; font-weight: bold; }
+.form-group input[type="number"], .form-group input[type="text"] { background-color: #1f2937; border: 1px solid #374151; color: #fff; padding: 0.8rem; border-radius: 6px; font-family: 'Inter', sans-serif; outline: none; }
+.form-group input:focus { border-color: #00f6ff; }
+
+.reg-note { font-size: 0.85rem; color: #6b7280; font-style: italic; margin-bottom: 2rem; }
+.reg-status-box { background-color: #1f2937; border: 1px dashed #374151; padding: 1.5rem; border-radius: 8px; text-align: center; font-weight: bold; margin-top: auto; }
+
+.cam-wrapper { background-color: #000; border-radius: 8px; overflow: hidden; display: flex; justify-content: center; border: 2px solid #1f2937; margin-bottom: 1rem; }
+.reg-webcam { width: 100%; object-fit: cover; opacity: 0.9; }
+.capture-btn { width: 100%; padding: 1rem; background-color: #00f6ff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.capture-btn:hover { background-color: #00d2da; }
+
+/* SETTINGS TAB */
+.settings-container { display: flex; flex-direction: column; gap: 2rem; }
+.settings-card { background-color: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 2rem; max-width: 600px; }
+.settings-card h3 { color: #fff; margin-top: 0; margin-bottom: 1.5rem; border-bottom: 1px solid #1f2937; padding-bottom: 1rem; }
+.save-btn { background-color: #10b981; color: #000; padding: 0.8rem 1.5rem; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.save-btn:hover { background-color: #059669; }
+.mt-2 { margin-top: 1rem; }
