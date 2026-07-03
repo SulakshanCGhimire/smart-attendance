@@ -74,13 +74,13 @@ const AdminDashboard = () => {
         </div>
         <nav className="sidebar-nav">
           <button className={activeTab === 'overview' ? 'active' : ''} onClick={() => setActiveTab('overview')}>
-            📊 System Overview
+            System Overview
           </button>
           <button className={activeTab === 'register' ? 'active' : ''} onClick={() => setActiveTab('register')}>
-            📸 Register Student
+            Register Student
           </button>
           <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
-            ⚙️ Settings
+            Settings
           </button>
         </nav>
         <div className="sidebar-footer">
@@ -107,7 +107,7 @@ const AdminDashboard = () => {
             <div className="table-container">
               <div className="table-header">
                 <h3>Recent Scan Logs</h3>
-                <button className="export-btn">📥 Export CSV</button>
+                <button className="export-btn"> Export CSV</button>
               </div>
               <table className="admin-table">
                 <thead><tr><th>Log ID</th><th>Student Name</th><th>Date</th><th>Time</th><th>Status</th></tr></thead>
