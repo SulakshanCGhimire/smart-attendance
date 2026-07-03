@@ -49,9 +49,9 @@ def process_live_frame(image_file):
 
             # Trigger Voice Feedback
             if success:
-                trigger_voice(f"Welcome, {first_name}. Attendance marked.")
+                trigger_voice("Attendance marked successfully.")
             else:
-                trigger_voice(f"Already marked today, {first_name}.")
+                trigger_voice("Already marked today.")
 
             return True, {
                 "user": matched_user['full_name'],
