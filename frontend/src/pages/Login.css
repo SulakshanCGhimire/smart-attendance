@@ -1,0 +1,144 @@
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #0b1120;
+  font-family: 'Inter', sans-serif;
+}
+
+.login-card {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-logo-icon {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #00f6ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #00f6ff;
+  font-weight: bold;
+}
+
+.login-brand h2 {
+  font-family: 'Teko', sans-serif;
+  color: #fff;
+  font-size: 1.8rem;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin: -1rem 0 0 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.login-error {
+  background-color: #ef444420;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+  padding: 0.7rem 1rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.form-group.login-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0;
+}
+
+.form-group.login-group label {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-wrapper input {
+  width: 100%;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: #fff;
+  padding: 0.8rem;
+  padding-right: 2.8rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.login-input-wrapper input:focus {
+  border-color: #00f6ff;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+
+.password-toggle-btn:hover {
+  color: #00f6ff;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background-color: #00f6ff;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background-color: #00d2da;
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

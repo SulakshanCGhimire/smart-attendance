@@ -160,18 +160,20 @@ const UserManagement = () => {
                       <td className="text-muted">{user.email}</td>
                       <td className="text-muted">{user.created_at || 'N/A'}</td>
                       <td>
-                        <button 
-                          className="action-btn edit-btn"
-                          onClick={() => handleEditClick(user)}
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          className="action-btn delete-btn"
-                          onClick={() => handleDelete(user.id)}
-                        >
-                          Delete
-                        </button>
+                        <div className="action-cell">
+                          <button
+                            className="action-btn edit-btn"
+                            onClick={() => handleEditClick(user)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="action-btn delete-btn"
+                            onClick={() => handleDelete(user.id)}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
