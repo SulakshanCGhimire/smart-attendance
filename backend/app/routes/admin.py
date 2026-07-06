@@ -1,10 +1,12 @@
 from flask import Blueprint, jsonify
 from app.utils.db import get_db_connection
+from app.utils.security import token_required
 from datetime import date
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
 
 @admin_bp.route('/daily-stats', methods=['GET'])
+@token_required
 def get_daily_stats():
     connection = get_db_connection()
     today = date.today()
