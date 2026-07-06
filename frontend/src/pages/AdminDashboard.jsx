@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import axios from 'axios';
 import './AdminDashboard.css';
@@ -12,7 +13,8 @@ const UserIcon = () => (
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  
+  const navigate = useNavigate();
+
   // State for real data
   const [stats, setStats] = useState({ total: 0, present: 0, absent: 0, late: 0 });
   const [logs, setLogs] = useState([]);
@@ -22,16 +24,27 @@ const AdminDashboard = () => {
     if (activeTab === 'overview') {
       const fetchDailyData = async () => {
         try {
-          const res = await axios.get('http://localhost:5000/api/admin/daily-stats');
+          const res = await axios.get('http://localhost:5000/api/admin/daily-stats', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          });
           setStats(res.data.stats);
           setLogs(res.data.logs);
         } catch (err) {
           console.error("Failed to fetch dashboard data:", err);
+          if (err.response?.status === 401) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }
         }
       };
       fetchDailyData();
     }
-  }, [activeTab]);
+  }, [activeTab, navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
 
   // Registration State
   const webcamRef = useRef(null);
@@ -56,7 +69,9 @@ const AdminDashboard = () => {
     formData.append('image', file);
 
     try {
-      const res = await axios.post('http://localhost:5000/api/faces/register', formData);
+      const res = await axios.post('http://localhost:5000/api/faces/register', formData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      });
       setRegStatus(`Success: ${res.data.message}`);
       setRegUserId('');
     } catch (err) {
@@ -82,9 +97,12 @@ const AdminDashboard = () => {
           <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
             Settings
           </button>
+          <button onClick={() => window.location.href='/admin/users'}>
+            User Management
+          </button>
         </nav>
         <div className="sidebar-footer">
-          <button className="logout-btn">Log Out</button>
+          <button className="logout-btn" onClick={handleLogout}>Log Out</button>
         </div>
       </aside>
 
@@ -156,6 +174,7 @@ const AdminDashboard = () => {
                   screenshotFormat="image/jpeg" 
                   className="reg-webcam"
                   videoConstraints={{ facingMode: "user" }} 
+                  mirrored={false}
                 />
               </div>
               <button className="capture-btn" onClick={handleRegister}>CAPTURE & SAVE ENCODING</button>
