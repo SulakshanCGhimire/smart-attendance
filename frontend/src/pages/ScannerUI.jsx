@@ -19,21 +19,44 @@ const ScannerUI = () => {
 
   const getInitials = (name) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
+  // Burst capture settings for liveness (blink) detection.
+  // 20 frames spaced 150ms apart ~= 3s total - gives a comfortable window
+  // to naturally land a blink in, rather than requiring split-second timing.
+  const BURST_FRAME_COUNT = 20;
+  const BURST_INTERVAL_MS = 150;
+
   const captureAndSend = useCallback(async () => {
     if (status !== 'AUTHENTICATING...' || !webcamRef.current) return;
 
-    const imageSrc = webcamRef.current.getScreenshot();
-    if (!imageSrc) return;
-
     setStatus('PROCESSING...');
-    setSubMessage('Analyzing biometric data...');
+    setSubMessage('Blink naturally in the next 3 seconds...');
 
-    const fetchRes = await fetch(imageSrc);
-    const blob = await fetchRes.blob();
-    const file = new File([blob], "frame.jpg", { type: "image/jpeg" });
+    // 1. Capture a short burst of frames
+    const frameDataUrls = [];
+    for (let i = 0; i < BURST_FRAME_COUNT; i++) {
+      const shot = webcamRef.current.getScreenshot();
+      if (shot) frameDataUrls.push(shot);
+      // Small delay between captures so we actually sample across time,
+      // not all in the same video tick.
+      await new Promise((resolve) => setTimeout(resolve, BURST_INTERVAL_MS));
+    }
 
+    if (frameDataUrls.length < 5) {
+      // Camera likely not ready / no frames captured - quietly retry later
+      resetScanner();
+      return;
+    }
+
+    // 2. Convert each captured frame into a File for multipart upload
     const formData = new FormData();
-    formData.append('frame', file);
+    for (let i = 0; i < frameDataUrls.length; i++) {
+      const fetchRes = await fetch(frameDataUrls[i]);
+      const blob = await fetchRes.blob();
+      const file = new File([blob], `frame_${i}.jpg`, { type: 'image/jpeg' });
+      formData.append('frames', file);
+    }
+
+    setSubMessage('Analyzing biometric data...');
 
     try {
       const response = await axios.post('http://localhost:5000/api/attendance/recognize', formData, {
@@ -60,6 +83,10 @@ const ScannerUI = () => {
       
       if (errorMsg.includes("No face detected")) {
          resetScanner(); 
+      } else if (errorMsg.includes("Liveness check failed")) {
+         setStatus('FAILED');
+         setSubMessage('Liveness check failed - please blink naturally.');
+         setTimeout(resetScanner, 3000);
       } else {
          setStatus('FAILED');
          setSubMessage(errorMsg || 'Recognition failed.');
@@ -106,7 +133,8 @@ const ScannerUI = () => {
                 ref={webcamRef} 
                 screenshotFormat="image/jpeg" 
                 className="webcam-feed"
-                videoConstraints={{ facingMode: "user" }} 
+                videoConstraints={{ facingMode: "user" }}
+                mirrored={false}
               />
               <div className="scanner-overlay">
                 <div className="corner top-left"></div>
