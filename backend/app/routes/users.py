@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services.user_service import register_student
+from app.utils.security import token_required
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
 
