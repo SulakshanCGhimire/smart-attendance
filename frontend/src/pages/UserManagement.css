@@ -90,6 +90,19 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  table-layout: fixed;
+}
+
+.um-table th:nth-child(1) { width: 7%; }   /* DB ID */
+.um-table th:nth-child(2) { width: 10%; }  /* Student ID */
+.um-table th:nth-child(3) { width: 18%; }  /* Full Name */
+.um-table th:nth-child(4) { width: 15%; }  /* Department */
+.um-table th:nth-child(5) { width: 22%; }  /* Email */
+.um-table th:nth-child(6) { width: 15%; }  /* Date Registered */
+.um-table th:nth-child(7) { width: 13%; }  /* Actions */
+
+.um-table td {
+  word-wrap: break-word;
 }
 
 .um-table th {
@@ -131,6 +144,7 @@
 }
 
 .dept-badge {
+  display: inline-block;
   background: rgba(56, 189, 248, 0.1);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.2);
@@ -139,6 +153,14 @@
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+.action-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
 }
 
 .action-btn {
@@ -150,6 +172,7 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .edit-btn {
@@ -165,7 +188,6 @@
 .delete-btn {
   color: #ef4444;
   background: rgba(239, 68, 68, 0.1);
-  margin-left: 0.5rem;
 }
 
 .delete-btn:hover {
