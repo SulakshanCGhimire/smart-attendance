@@ -47,3 +47,39 @@ def log_attendance(user_id: int):
         return False, "Duplicate scan. Already marked present today."
     finally:
         connection.close()
+
+def get_logs_for_user(user_id: int, start_date=None, end_date=None):
+    """
+    Fetches all attendance logs for a single student, optionally filtered
+    to a date range. Ordered most-recent-first.
+    """
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT id, log_date, log_time, status FROM attendance_logs WHERE user_id = %s"
+            params = [user_id]
+
+            if start_date:
+                sql += " AND log_date >= %s"
+                params.append(start_date)
+            if end_date:
+                sql += " AND log_date <= %s"
+                params.append(end_date)
+
+            sql += " ORDER BY log_date DESC, log_time DESC"
+
+            cursor.execute(sql, tuple(params))
+            return cursor.fetchall()
+    finally:
+        connection.close()
+
+def get_log_for_user_on_date(user_id: int, target_date):
+    """Fetches a single day's attendance log for one student, or None if absent that day."""
+    connection = get_db_connection()
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT id, log_date, log_time, status FROM attendance_logs WHERE user_id = %s AND log_date = %s"
+            cursor.execute(sql, (user_id, target_date))
+            return cursor.fetchone()
+    finally:
+        connection.close()

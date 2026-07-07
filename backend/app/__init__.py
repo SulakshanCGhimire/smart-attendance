@@ -6,6 +6,7 @@ from app.routes.users import users_bp
 from app.routes.faces import faces_bp
 from app.routes.recognition import recognition_bp
 from app.routes.admin import admin_bp 
+from app.routes.student import student_bp
 
 def create_app():
     app = Flask(__name__)
@@ -18,5 +19,6 @@ def create_app():
     app.register_blueprint(faces_bp)
     app.register_blueprint(recognition_bp)
     app.register_blueprint(admin_bp) 
+    app.register_blueprint(student_bp)
 
     return app

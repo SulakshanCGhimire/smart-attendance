@@ -13,3 +13,7 @@ class Config:
     
     # JWT Config
     JWT_EXPIRATION_HOURS = 12
+
+    # Attendance: minutes since midnight after which a scan counts as "Late".
+    # 9*60 = 9:00 AM.
+    LATE_CUTOFF_MINUTES = 9 * 60
