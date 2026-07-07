@@ -51,6 +51,23 @@
 .export-btn { background-color: #1f2937; color: #fff; border: 1px solid #374151; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; transition: 0.2s; }
 .export-btn:hover { background-color: #374151; }
 
+.monthly-report-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: #9ca3af;
+}
+
+.monthly-report-controls input[type="month"] {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
 .admin-table { width: 100%; border-collapse: collapse; text-align: left; }
 .admin-table th { padding: 1rem; border-bottom: 2px solid #1f2937; color: #6b7280; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
 .admin-table td { padding: 1rem; border-bottom: 1px solid #1f2937; color: #d1d5db; }
