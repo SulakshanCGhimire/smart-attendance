@@ -104,6 +104,7 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
             "late": late_count,
             "range_days": range_days,
             "attendance_percentage": attendance_percentage,
+            "registered_on": reg_date_only.isoformat(),
         },
         "logs": formatted_logs,
     }
