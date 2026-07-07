@@ -106,7 +106,7 @@ const ScannerUI = () => {
     if (status === 'AUTHENTICATING...') {
       interval = setInterval(() => {
         captureAndSend();
-      }, 10000);
+      }, 5000);
     }
     return () => clearInterval(interval);
   }, [status, captureAndSend]);

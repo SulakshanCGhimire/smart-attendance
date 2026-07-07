@@ -20,15 +20,22 @@ import numpy as np
 import face_recognition
 
 # Below this EAR, the eye is considered "closed" for this frame.
-EAR_CLOSED_THRESHOLD = 0.21
+# Slightly raised from the strict research default (0.21) so partial/quick
+# blinks are still caught, without being so high it starts misreading
+# normal open eyes as closed (a comfortable gap remains below typical
+# open-eye EAR of ~0.28-0.33).
+EAR_CLOSED_THRESHOLD = 0.23
 
 # Minimum number of consecutive closed-eye frames to count as a real blink
 # (filters out a single noisy/misdetected frame).
 MIN_CLOSED_FRAMES = 1
 
-# Minimum number of open frames required before AND after the closed dip,
-# to confirm eyes were genuinely open, then closed, then open again.
-MIN_OPEN_FRAMES_AROUND_BLINK = 2
+# Minimum number of open frames required before the closed dip, to confirm
+# eyes were genuinely open before closing. Lowered from 2 to 1 - still
+# guards against a single misdetected frame looking like a blink, but no
+# longer requires a longer open run right at the very start/end of the
+# capture window, which was rejecting genuine blinks that happened early.
+MIN_OPEN_FRAMES_AROUND_BLINK = 1
 
 
 def _euclidean(p1, p2):
