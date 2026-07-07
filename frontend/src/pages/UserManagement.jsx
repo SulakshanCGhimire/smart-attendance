@@ -8,8 +8,9 @@ const UserManagement = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
+  const [editPassword, setEditPassword] = useState('');
   const [addingUser, setAddingUser] = useState(false);
-  const [newUser, setNewUser] = useState({ db_id: '', student_id: '', full_name: '', department: '', email: '' });
+  const [newUser, setNewUser] = useState({ db_id: '', student_id: '', full_name: '', department: '', email: '', password: '' });
   
   const navigate = useNavigate();
 
@@ -44,6 +45,7 @@ const UserManagement = () => {
 
   const handleEditClick = (user) => {
     setEditingUser({ ...user });
+    setEditPassword('');
   };
 
   const handleEditChange = (e) => {
@@ -57,13 +59,18 @@ const UserManagement = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/users/${editingUser.id}`, {
+      const payload = {
         student_id: editingUser.student_id,
         full_name: editingUser.full_name,
         department: editingUser.department,
         email: editingUser.email
-      }, authHeader());
+      };
+      if (editPassword) {
+        payload.password = editPassword;
+      }
+      await axios.put(`http://localhost:5000/api/users/${editingUser.id}`, payload, authHeader());
       setEditingUser(null);
+      setEditPassword('');
       fetchUsers(); // Refresh the list
     } catch (err) {
       console.error("Error updating user:", err);
@@ -96,7 +103,7 @@ const UserManagement = () => {
     try {
       await axios.post('http://localhost:5000/api/users/register', newUser, authHeader());
       setAddingUser(false);
-      setNewUser({ db_id: '', student_id: '', full_name: '', department: '', email: '' });
+      setNewUser({ db_id: '', student_id: '', full_name: '', department: '', email: '', password: '' });
       fetchUsers(); // Refresh the list
     } catch (err) {
       console.error("Error adding user:", err);
@@ -231,6 +238,16 @@ const UserManagement = () => {
                   required 
                 />
               </div>
+              <div className="form-group">
+                <label>Reset Student Login Password (optional)</label>
+                <input
+                  type="text"
+                  name="editPassword"
+                  value={editPassword}
+                  onChange={(e) => setEditPassword(e.target.value)}
+                  placeholder="Leave blank to keep current password"
+                />
+              </div>
               <div className="modal-actions">
                 <button type="button" className="cancel-btn" onClick={() => setEditingUser(null)}>
                   Cancel
@@ -299,6 +316,16 @@ const UserManagement = () => {
                   value={newUser.email} 
                   onChange={handleAddChange} 
                   required 
+                />
+              </div>
+              <div className="form-group">
+                <label>Student Login Password (optional)</label>
+                <input
+                  type="text"
+                  name="password"
+                  value={newUser.password}
+                  onChange={handleAddChange}
+                  placeholder="Defaults to Student ID if left blank"
                 />
               </div>
               <div className="modal-actions">

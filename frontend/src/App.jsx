@@ -4,6 +4,9 @@ import AdminDashboard from './pages/AdminDashboard';
 import UserManagement from './pages/UserManagement';
 import Login from './pages/Login';
 import ProtectedRoute from './components/ProtectedRoute';
+import StudentLogin from './pages/StudentLogin';
+import StudentDashboard from './pages/StudentDashboard';
+import StudentProtectedRoute from './components/StudentProtectedRoute';
 
 function App() {
   return (
@@ -25,6 +28,16 @@ function App() {
             <ProtectedRoute>
               <UserManagement />
             </ProtectedRoute>
+          }
+        />
+
+        <Route path="/student/login" element={<StudentLogin />} />
+        <Route
+          path="/student/dashboard"
+          element={
+            <StudentProtectedRoute>
+              <StudentDashboard />
+            </StudentProtectedRoute>
           }
         />
       </Routes>

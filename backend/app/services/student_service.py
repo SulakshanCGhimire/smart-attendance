@@ -44,8 +44,9 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
     Since there's no class schedule/calendar in this system, "Absent" days
     aren't listed individually here (there's no way to know which days
     were expected) - the report shows exactly the days the student DID
-    scan in, with Present/Late correctly distinguished, plus an overall
-    attendance percentage against the number of days since registration.
+    scan in, with Present/Late correctly distinguished, plus a percentage
+    scoped to whatever date range was requested (e.g. one month, up to
+    today if that month is still in progress).
     """
     user = get_user_by_id(user_id)
     if not user:
@@ -70,19 +71,26 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
     present_count = len(formatted_logs)
     on_time_count = present_count - late_count
 
-    # Attendance percentage is calculated against calendar days since
-    # registration (a simplification - it doesn't account for holidays,
-    # weekends, or an actual class schedule, since none exists in this
-    # system yet. Worth flagging as a known approximation if asked).
+    # Registration date - used as a floor, so the range never counts days
+    # before the student even existed in the system.
     registration_date = user['created_at']
     if isinstance(registration_date, str):
-        # created_at may already be formatted as a string by get_user_by_id
         reg_date_only = date.fromisoformat(registration_date.split()[0])
     else:
         reg_date_only = registration_date.date() if hasattr(registration_date, 'date') else registration_date
 
-    days_since_registration = max((date.today() - reg_date_only).days + 1, 1)
-    attendance_percentage = round((present_count / days_since_registration) * 100, 1)
+    # Determine the actual range being reported on:
+    # - if the caller gave start_date/end_date (e.g. "July 2026"), use that,
+    #   clamped so it never starts before registration or ends after today.
+    # - if no range was given, fall back to "since registration through today".
+    range_start = date.fromisoformat(start_date) if start_date else reg_date_only
+    range_start = max(range_start, reg_date_only)
+
+    range_end = date.fromisoformat(end_date) if end_date else date.today()
+    range_end = min(range_end, date.today())
+
+    range_days = max((range_end - range_start).days + 1, 1)
+    attendance_percentage = round((present_count / range_days) * 100, 1)
 
     report = {
         "student": {
@@ -94,7 +102,7 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
             "total_present": present_count,
             "on_time": on_time_count,
             "late": late_count,
-            "days_since_registration": days_since_registration,
+            "range_days": range_days,
             "attendance_percentage": attendance_percentage,
         },
         "logs": formatted_logs,

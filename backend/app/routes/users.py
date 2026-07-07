@@ -21,7 +21,8 @@ def register():
         "user_id": user_id
     }), 201
 
-from app.models.user import get_all_users, update_user, delete_user
+from app.models.user import get_all_users, update_user, delete_user, set_user_password
+from app.utils.security import hash_password
 
 @users_bp.route('/', methods=['GET'])
 @token_required
@@ -40,15 +41,21 @@ def edit_user(user_id):
     full_name = data.get('full_name')
     department = data.get('department')
     email = data.get('email')
+    new_password = data.get('password')  # optional - only set if admin typed one
 
     if not all([student_id, full_name, department, email]):
         return jsonify({"error": "Missing required fields"}), 400
 
     success = update_user(user_id, student_id, full_name, department, email)
-    if success:
-        return jsonify({"message": "User updated successfully"}), 200
-    else:
+    if not success:
         return jsonify({"error": "Failed to update user. Duplicate ID or Email?"}), 400
+
+    if new_password:
+        password_hash = hash_password(new_password)
+        if not set_user_password(user_id, password_hash):
+            return jsonify({"message": "User updated, but password reset failed."}), 200
+
+    return jsonify({"message": "User updated successfully"}), 200
 
 @users_bp.route('/<int:user_id>', methods=['DELETE'])
 @token_required

@@ -1,0 +1,244 @@
+.sd-container {
+  height: 100vh;
+  width: 100%;
+  background-color: #0b1120;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+  scrollbar-width: none;      
+  -ms-overflow-style: none;   
+}
+
+.sd-container::-webkit-scrollbar {
+  display: none;               /* Chrome, Safari, new Edge */
+}
+
+.sd-loading, .sd-error {
+  text-align: center;
+  margin-top: 4rem;
+  color: #9ca3af;
+}
+
+.sd-error {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.sd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #1f2937;
+  padding-bottom: 1.5rem;
+}
+
+.sd-header h1 {
+  font-family: 'Teko', sans-serif;
+  font-size: 2rem;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.sd-subtitle {
+  color: #6b7280;
+  margin: 0.2rem 0 0 0;
+  font-size: 0.9rem;
+}
+
+.sd-logout-btn, .sd-btn {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: #fff;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.sd-logout-btn:hover, .sd-btn:hover:not(:disabled) {
+  background-color: #374151;
+  border-color: #00f6ff;
+}
+
+.sd-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sd-month-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.sd-month-picker input[type="month"] {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
+.sd-month-label {
+  font-family: 'Teko', sans-serif;
+  font-size: 1.2rem;
+  color: #00f6ff;
+  letter-spacing: 0.5px;
+}
+
+.sd-stat-sublabel {
+  font-size: 0.7rem;
+  color: #6b7280;
+}
+
+.sd-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.sd-stat-card {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sd-stat-value {
+  font-family: 'Teko', sans-serif;
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #00f6ff;
+}
+
+.sd-stat-value.sd-stat-late {
+  color: #f59e0b;
+}
+
+.sd-stat-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sd-check-section, .sd-history-section {
+  background-color: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sd-check-section h2, .sd-history-section h2 {
+  font-family: 'Teko', sans-serif;
+  font-size: 1.4rem;
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.5px;
+}
+
+.sd-check-form {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.sd-check-form input[type="date"] {
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  color: #fff;
+  padding: 0.6rem;
+  border-radius: 6px;
+  font-family: 'Inter', sans-serif;
+}
+
+.sd-check-result {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.sd-status-present {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+}
+
+.sd-status-late {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+}
+
+.sd-status-absent {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.sd-status-error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.sd-empty {
+  color: #6b7280;
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.sd-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sd-table th {
+  text-align: left;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #1f2937;
+}
+
+.sd-table td {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #1f2937;
+}
+
+.sd-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sd-badge.sd-status-present {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: none;
+}
+
+.sd-badge.sd-status-late {
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: none;
+}
