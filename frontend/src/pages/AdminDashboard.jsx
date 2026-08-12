@@ -178,9 +178,9 @@ const AdminDashboard = () => {
           <button className={activeTab === 'monthly' ? 'active' : ''} onClick={() => setActiveTab('monthly')}>
             Monthly Report
           </button>
-          <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
+          {/* <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
             Settings
-          </button>
+          </button> */}
           <button onClick={() => window.location.href='/admin/users'}>
             User Management
           </button>
@@ -327,7 +327,7 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'settings' && (
+        {/* {activeTab === 'settings' && (
           <div className="settings-container">
             <div className="settings-card">
               <h3>Scanner & Voice Settings</h3>
@@ -346,7 +346,7 @@ const AdminDashboard = () => {
               <button className="save-btn mt-2">Save Configuration</button>
             </div>
           </div>
-        )}
+        )} */}
       </main>
 
       {selectedStudentId && (
