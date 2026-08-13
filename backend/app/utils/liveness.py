@@ -31,8 +31,8 @@ EAR_CLOSED_THRESHOLD = 0.23
 MIN_CLOSED_FRAMES = 1
 
 # Minimum number of open frames required before the closed dip, to confirm
-# eyes were genuinely open before closing. Lowered from 2 to 1 - still
-# guards against a single misdetected frame looking like a blink, but no
+# eyes were genuinely open before closing. 
+# Guards against a single misdetected frame looking like a blink, but no
 # longer requires a longer open run right at the very start/end of the
 # capture window, which was rejecting genuine blinks that happened early.
 MIN_OPEN_FRAMES_AROUND_BLINK = 1

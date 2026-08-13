@@ -45,7 +45,7 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
     aren't listed individually here (there's no way to know which days
     were expected) - the report shows exactly the days the student DID
     scan in, with Present/Late correctly distinguished, plus a percentage
-    scoped to whatever date range was requested (e.g. one month, up to
+    scope(e.g. one month, up to
     today if that month is still in progress).
     """
     user = get_user_by_id(user_id)
