@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './UserManagement.css';
@@ -11,37 +11,42 @@ const UserManagement = () => {
   const [editPassword, setEditPassword] = useState('');
   const [addingUser, setAddingUser] = useState(false);
   const [newUser, setNewUser] = useState({ db_id: '', student_id: '', full_name: '', department: '', email: '', password: '' });
+  const [refreshCount, setRefreshCount] = useState(0);
   
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const authHeader = () => ({
+  const authHeader = useCallback(() => ({
     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  });
+  }), []);
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      // Assuming backend is running on standard port, but using relative paths if proxied
-      // For Vite, usually api requests need to hit the exact backend URL. Let's assume port 5000 as typical.
-      const response = await axios.get('http://localhost:5000/api/users/', authHeader());
-      setUsers(response.data);
-      setError(null);
-    } catch (err) {
-      console.error("Error fetching users:", err);
-      if (err.response?.status === 401) {
-        localStorage.removeItem('token');
-        navigate('/login');
-        return;
-      }
-      setError("Failed to load users. Please ensure the backend is running.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    let ignore = false;
+
+    axios.get('http://localhost:5000/api/users/', authHeader())
+      .then((response) => {
+        if (!ignore) {
+          setUsers(response.data);
+          setError(null);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          console.error("Error fetching users:", err);
+          if (err.response?.status === 401) {
+            localStorage.removeItem('token');
+            navigate('/login');
+            return;
+          }
+          setError("Failed to load users. Please ensure the backend is running.");
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [refreshCount, authHeader, navigate]);
 
   const handleEditClick = (user) => {
     setEditingUser({ ...user });
@@ -71,7 +76,8 @@ const UserManagement = () => {
       await axios.put(`http://localhost:5000/api/users/${editingUser.id}`, payload, authHeader());
       setEditingUser(null);
       setEditPassword('');
-      fetchUsers(); // Refresh the list
+      setLoading(true);
+      setRefreshCount(c => c + 1);
     } catch (err) {
       console.error("Error updating user:", err);
       alert("Failed to update user. Duplicate ID or Email?");
@@ -82,7 +88,8 @@ const UserManagement = () => {
     if (window.confirm("Are you sure you want to delete this user? This action cannot be undone.")) {
       try {
         await axios.delete(`http://localhost:5000/api/users/${userId}`, authHeader());
-        fetchUsers(); // Refresh the list
+        setLoading(true);
+        setRefreshCount(c => c + 1);
       } catch (err) {
         console.error("Error deleting user:", err);
         alert("Failed to delete user.");
@@ -104,7 +111,8 @@ const UserManagement = () => {
       await axios.post('http://localhost:5000/api/users/register', newUser, authHeader());
       setAddingUser(false);
       setNewUser({ db_id: '', student_id: '', full_name: '', department: '', email: '', password: '' });
-      fetchUsers(); // Refresh the list
+      setLoading(true);
+      setRefreshCount(c => c + 1);
     } catch (err) {
       console.error("Error adding user:", err);
       alert(err.response?.data?.error || "Failed to add user. Duplicate ID or Email?");
@@ -153,7 +161,7 @@ const UserManagement = () => {
               <tbody>
                 {users.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="no-data">No users found.</td>
+                    <td colSpan="7" className="no-data">No users found.</td>
                   </tr>
                 ) : (
                   users.map(user => (

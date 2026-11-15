@@ -1,25 +1,26 @@
+from datetime import date
 from flask import Blueprint, jsonify, request, Response
 from app.utils.db import get_db_connection
 from app.utils.security import token_required
 from app.utils.attendance_helpers import format_log_time_and_late_flag
 from app.services.admin_report_service import get_monthly_summary, generate_daily_csv, generate_monthly_csv
 from app.services.student_service import get_attendance_report
-from datetime import date
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/api/admin')
+
 
 @admin_bp.route('/daily-stats', methods=['GET'])
 @token_required
 def get_daily_stats():
     connection = get_db_connection()
     today = date.today()
-    
+
     try:
         with connection.cursor() as cursor:
             # 1. Get total number of registered students
             cursor.execute("SELECT COUNT(*) as total FROM users")
             total_users = cursor.fetchone()['total']
-            
+
             # 2. Get today's attendance logs
             sql_logs = """
                 SELECT a.id, u.full_name as name, a.log_date as date, a.log_time as time, a.status 
@@ -30,11 +31,11 @@ def get_daily_stats():
             """
             cursor.execute(sql_logs, (today,))
             today_logs = cursor.fetchall()
-            
+
             # 3. Calculate Real-Time Stats
             present_count = len(today_logs)
-            absent_count = total_users - present_count
-            
+            absent_count = max(0, total_users - present_count)
+
             late_count = 0
             for log in today_logs:
                 log['date'] = log['date'].strftime('%b %d, %Y')
@@ -52,7 +53,7 @@ def get_daily_stats():
                 "absent": absent_count,
                 "late": late_count
             }
-            
+
             return jsonify({"stats": stats, "logs": today_logs}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -128,6 +129,7 @@ def student_attendance_detail(user_id):
     report, error = get_attendance_report(user_id, start_date, end_date)
 
     if error:
-        return jsonify({"error": error}), 404
+        status_code = 400 if "Invalid date" in error else 404
+        return jsonify({"error": error}), status_code
 
     return jsonify(report), 200

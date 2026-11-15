@@ -1,9 +1,10 @@
-import bcrypt
-import jwt
 import datetime
 from functools import wraps
+import bcrypt
+import jwt
 from flask import request, jsonify
 from app.config import Config
+
 
 def hash_password(password: str) -> str:
     """Hashes a plaintext password using bcrypt."""
@@ -11,9 +12,11 @@ def hash_password(password: str) -> str:
     hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
     return hashed.decode('utf-8')
 
+
 def check_password(password: str, hashed_password: str) -> bool:
     """Verifies a plaintext password against a hash."""
     return bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8'))
+
 
 def generate_jwt(admin_id: int, username: str) -> str:
     """Generates a JSON Web Token for an ADMIN, valid for a set duration."""
@@ -21,10 +24,11 @@ def generate_jwt(admin_id: int, username: str) -> str:
         'admin_id': admin_id,
         'username': username,
         'role': 'admin',
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=Config.JWT_EXPIRATION_HOURS)
+        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=Config.JWT_EXPIRATION_HOURS)
     }
     token = jwt.encode(payload, Config.SECRET_KEY, algorithm='HS256')
     return token
+
 
 def generate_student_jwt(user_id: int, student_id: str) -> str:
     """Generates a JSON Web Token for a STUDENT, valid for a set duration."""
@@ -32,10 +36,11 @@ def generate_student_jwt(user_id: int, student_id: str) -> str:
         'user_id': user_id,
         'student_id': student_id,
         'role': 'student',
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=Config.JWT_EXPIRATION_HOURS)
+        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=Config.JWT_EXPIRATION_HOURS)
     }
     token = jwt.encode(payload, Config.SECRET_KEY, algorithm='HS256')
     return token
+
 
 def _decode_bearer_token(auth_header):
     """
@@ -59,6 +64,7 @@ def _decode_bearer_token(auth_header):
     except jwt.InvalidTokenError:
         return None, (jsonify({"error": "Invalid token."}), 401)
 
+
 def token_required(f):
     """
     Decorator that protects an ADMIN route. Requires a valid JWT with
@@ -77,6 +83,7 @@ def token_required(f):
         request.admin = payload
         return f(*args, **kwargs)
     return decorated
+
 
 def student_token_required(f):
     """

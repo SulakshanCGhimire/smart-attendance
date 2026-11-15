@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../pages/Login.css';
@@ -12,7 +12,7 @@ const UserIcon = () => (
 
 const EyeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="20" height="20">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8Z" />
     <circle cx="12" cy="12" r="3" />
   </svg>
 );

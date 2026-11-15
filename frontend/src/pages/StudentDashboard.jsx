@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './StudentDashboard.css';
@@ -95,6 +95,7 @@ const StudentDashboard = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [refreshCount, setRefreshCount] = useState(0);
 
   const [selectedMonth, setSelectedMonth] = useState(getCurrentYearMonth());
 
@@ -109,31 +110,43 @@ const StudentDashboard = () => {
     navigate('/student/login');
   };
 
-  const fetchReport = useCallback(async (yearMonth) => {
+  useEffect(() => {
+    let ignore = false;
+    const { startDate, endDate } = getMonthRange(selectedMonth);
+
+    axios.get(
+      `${API_BASE}/attendance?start_date=${startDate}&end_date=${endDate}`,
+      authHeader()
+    )
+      .then((res) => {
+        if (!ignore) {
+          setReport(res.data);
+          setError('');
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          if (err.response?.status === 401 || err.response?.status === 403) {
+            localStorage.removeItem('student_token');
+            navigate('/student/login');
+            return;
+          }
+          setError(err.response?.data?.error || 'Failed to load attendance report.');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [selectedMonth, refreshCount, navigate]);
+
+  const handleRetry = () => {
     setLoading(true);
     setError('');
-    try {
-      const { startDate, endDate } = getMonthRange(yearMonth);
-      const res = await axios.get(
-        `${API_BASE}/attendance?start_date=${startDate}&end_date=${endDate}`,
-        authHeader()
-      );
-      setReport(res.data);
-    } catch (err) {
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        localStorage.removeItem('student_token');
-        navigate('/student/login');
-        return;
-      }
-      setError(err.response?.data?.error || 'Failed to load attendance report.');
-    } finally {
-      setLoading(false);
-    }
-  }, [navigate]);
-
-  useEffect(() => {
-    fetchReport(selectedMonth);
-  }, [fetchReport, selectedMonth]);
+    setRefreshCount((c) => c + 1);
+  };
 
   const handleCheckDate = async (e) => {
     e.preventDefault();
@@ -159,7 +172,7 @@ const StudentDashboard = () => {
     return (
       <div className="sd-container">
         <p className="sd-error">{error}</p>
-        <button className="sd-btn" onClick={() => fetchReport(selectedMonth)}>Retry</button>
+        <button className="sd-btn" onClick={handleRetry}>Retry</button>
       </div>
     );
   }
@@ -184,7 +197,10 @@ const StudentDashboard = () => {
           type="month"
           value={selectedMonth}
           max={currentMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
+          onChange={(e) => {
+            setSelectedMonth(e.target.value);
+            setLoading(true);
+          }}
         />
       </section>
 

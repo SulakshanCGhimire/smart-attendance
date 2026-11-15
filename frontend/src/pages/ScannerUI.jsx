@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback, useEffect } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
 import './ScannerUI.css';
@@ -10,6 +10,14 @@ const UserIcon = () => (
   </svg>
 );
 
+const getInitials = (name) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+// Burst capture settings for liveness (blink) detection.
+// 20 frames spaced 150ms apart ~= 3s total - gives a comfortable window
+// to naturally land a blink in, rather than requiring split-second timing.
+const BURST_FRAME_COUNT = 20;
+const BURST_INTERVAL_MS = 150;
+
 const ScannerUI = () => {
   const webcamRef = useRef(null);
   const [status, setStatus] = useState('AUTHENTICATING...');
@@ -17,13 +25,10 @@ const ScannerUI = () => {
   const [lastScan, setLastScan] = useState(null);
   const [recentScans, setRecentScans] = useState([]); 
 
-  const getInitials = (name) => name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-
-  // Burst capture settings for liveness (blink) detection.
-  // 20 frames spaced 150ms apart ~= 3s total - gives a comfortable window
-  // to naturally land a blink in, rather than requiring split-second timing.
-  const BURST_FRAME_COUNT = 20;
-  const BURST_INTERVAL_MS = 150;
+  const resetScanner = useCallback(() => {
+    setStatus('AUTHENTICATING...');
+    setSubMessage('Please look at the camera');
+  }, []);
 
   const captureAndSend = useCallback(async () => {
     if (status !== 'AUTHENTICATING...' || !webcamRef.current) return;
@@ -93,12 +98,7 @@ const ScannerUI = () => {
          setTimeout(resetScanner, 3000);
       }
     }
-  }, [status, webcamRef]);
-
-  const resetScanner = () => {
-    setStatus('AUTHENTICATING...');
-    setSubMessage('Please look at the camera');
-  };
+  }, [status, webcamRef, resetScanner]);
 
   // Auto-Scan Loop
   useEffect(() => {

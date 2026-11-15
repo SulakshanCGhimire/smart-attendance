@@ -45,12 +45,19 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
     aren't listed individually here (there's no way to know which days
     were expected) - the report shows exactly the days the student DID
     scan in, with Present/Late correctly distinguished, plus a percentage
-    scope(e.g. one month, up to
-    today if that month is still in progress).
+    scope (e.g. one month, up to today if that month is still in progress).
     """
     user = get_user_by_id(user_id)
     if not user:
         return None, "User not found."
+
+    try:
+        if start_date:
+            date.fromisoformat(start_date)
+        if end_date:
+            date.fromisoformat(end_date)
+    except (ValueError, TypeError):
+        return None, "Invalid date format. Use YYYY-MM-DD."
 
     logs = get_logs_for_user(user_id, start_date, end_date)
 
@@ -89,8 +96,12 @@ def get_attendance_report(user_id: int, start_date=None, end_date=None):
     range_end = date.fromisoformat(end_date) if end_date else date.today()
     range_end = min(range_end, date.today())
 
-    range_days = max((range_end - range_start).days + 1, 1)
-    attendance_percentage = round((present_count / range_days) * 100, 1)
+    if range_start > range_end:
+        range_days = 0
+        attendance_percentage = 0.0
+    else:
+        range_days = (range_end - range_start).days + 1
+        attendance_percentage = round((present_count / range_days) * 100, 1) if range_days > 0 else 0.0
 
     report = {
         "student": {

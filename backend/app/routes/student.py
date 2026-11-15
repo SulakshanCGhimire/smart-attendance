@@ -54,7 +54,8 @@ def attendance():
     report, error = get_attendance_report(user_id, start_date, end_date)
 
     if error:
-        return jsonify({"error": error}), 404
+        status_code = 400 if "Invalid date" in error else 404
+        return jsonify({"error": error}), status_code
 
     return jsonify(report), 200
 

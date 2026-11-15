@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import axios from 'axios';
@@ -12,6 +12,16 @@ const UserIcon = () => (
   </svg>
 );
 
+const getMonthRange = (yearMonth) => {
+  const [year, month] = yearMonth.split('-').map(Number);
+  const startDate = `${yearMonth}-01`;
+  const lastDayOfMonth = new Date(year, month, 0).getDate();
+  const todayStr = new Date().toISOString().split('T')[0];
+  const monthEndStr = `${yearMonth}-${String(lastDayOfMonth).padStart(2, '0')}`;
+  const endDate = monthEndStr > todayStr ? todayStr : monthEndStr;
+  return { startDate, endDate };
+};
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
@@ -23,22 +33,29 @@ const AdminDashboard = () => {
   // Fetch live data from Flask
   useEffect(() => {
     if (activeTab === 'overview') {
-      const fetchDailyData = async () => {
-        try {
-          const res = await axios.get('http://localhost:5000/api/admin/daily-stats', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-          });
-          setStats(res.data.stats);
-          setLogs(res.data.logs);
-        } catch (err) {
-          console.error("Failed to fetch dashboard data:", err);
-          if (err.response?.status === 401) {
-            localStorage.removeItem('token');
-            navigate('/login');
+      let ignore = false;
+      axios.get('http://localhost:5000/api/admin/daily-stats', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+        .then((res) => {
+          if (!ignore) {
+            setStats(res.data.stats);
+            setLogs(res.data.logs);
           }
-        }
+        })
+        .catch((err) => {
+          if (!ignore) {
+            console.error("Failed to fetch dashboard data:", err);
+            if (err.response?.status === 401) {
+              localStorage.removeItem('token');
+              navigate('/login');
+            }
+          }
+        });
+
+      return () => {
+        ignore = true;
       };
-      fetchDailyData();
     }
   }, [activeTab, navigate]);
 
@@ -83,41 +100,37 @@ const AdminDashboard = () => {
   const [monthlyLoading, setMonthlyLoading] = useState(false);
   const [selectedStudentId, setSelectedStudentId] = useState(null);
 
-  const getMonthRange = (yearMonth) => {
-    const [year, month] = yearMonth.split('-').map(Number);
-    const startDate = `${yearMonth}-01`;
-    const lastDayOfMonth = new Date(year, month, 0).getDate();
-    const todayStr = new Date().toISOString().split('T')[0];
-    const monthEndStr = `${yearMonth}-${String(lastDayOfMonth).padStart(2, '0')}`;
-    const endDate = monthEndStr > todayStr ? todayStr : monthEndStr;
-    return { startDate, endDate };
-  };
-
-  const fetchMonthlySummary = useCallback(async (yearMonth) => {
-    setMonthlyLoading(true);
-    try {
-      const { startDate, endDate } = getMonthRange(yearMonth);
-      const res = await axios.get(
-        `http://localhost:5000/api/admin/monthly-summary?start_date=${startDate}&end_date=${endDate}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-      );
-      setMonthlySummary(res.data);
-    } catch (err) {
-      console.error('Failed to fetch monthly summary:', err);
-      if (err.response?.status === 401) {
-        localStorage.removeItem('token');
-        navigate('/login');
-      }
-    } finally {
-      setMonthlyLoading(false);
-    }
-  }, [navigate]);
-
   useEffect(() => {
     if (activeTab === 'monthly') {
-      fetchMonthlySummary(reportMonth);
+      let ignore = false;
+      const { startDate, endDate } = getMonthRange(reportMonth);
+
+      axios.get(
+        `http://localhost:5000/api/admin/monthly-summary?start_date=${startDate}&end_date=${endDate}`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      )
+        .then((res) => {
+          if (!ignore) {
+            setMonthlySummary(res.data);
+            setMonthlyLoading(false);
+          }
+        })
+        .catch((err) => {
+          if (!ignore) {
+            console.error('Failed to fetch monthly summary:', err);
+            setMonthlyLoading(false);
+            if (err.response?.status === 401) {
+              localStorage.removeItem('token');
+              navigate('/login');
+            }
+          }
+        });
+
+      return () => {
+        ignore = true;
+      };
     }
-  }, [activeTab, reportMonth, fetchMonthlySummary]);
+  }, [activeTab, reportMonth, navigate]);
 
   const handleExportMonthlyCsv = () => {
     const { startDate, endDate } = getMonthRange(reportMonth);
@@ -178,10 +191,7 @@ const AdminDashboard = () => {
           <button className={activeTab === 'monthly' ? 'active' : ''} onClick={() => setActiveTab('monthly')}>
             Monthly Report
           </button>
-          {/* <button className={activeTab === 'settings' ? 'active' : ''} onClick={() => setActiveTab('settings')}>
-            Settings
-          </button> */}
-          <button onClick={() => window.location.href='/admin/users'}>
+          <button onClick={() => navigate('/admin/users')}>
             User Management
           </button>
         </nav>
@@ -275,7 +285,10 @@ const AdminDashboard = () => {
                 type="month"
                 value={reportMonth}
                 max={new Date().toISOString().slice(0, 7)}
-                onChange={(e) => setReportMonth(e.target.value)}
+                onChange={(e) => {
+                  setReportMonth(e.target.value);
+                  setMonthlyLoading(true);
+                }}
               />
               <button className="export-btn" onClick={handleExportMonthlyCsv}>Export Monthly CSV</button>
             </div>
@@ -326,27 +339,6 @@ const AdminDashboard = () => {
             )}
           </div>
         )}
-
-        {/* {activeTab === 'settings' && (
-          <div className="settings-container">
-            <div className="settings-card">
-              <h3>Scanner & Voice Settings</h3>
-              <div className="form-group">
-                <label>Face Recognition Strictness (Lower = Stricter, Default: 0.5)</label>
-                <input type="number" step="0.1" defaultValue="0.5" />
-              </div>
-              <div className="form-group">
-                <label>Time Between Camera Scans (in milliseconds)</label>
-                <input type="number" defaultValue="3000" />
-              </div>
-              <div className="form-group row">
-                <input type="checkbox" id="voiceToggle" defaultChecked />
-                <label htmlFor="voiceToggle">Enable Voice Greetings</label>
-              </div>
-              <button className="save-btn mt-2">Save Configuration</button>
-            </div>
-          </div>
-        )} */}
       </main>
 
       {selectedStudentId && (

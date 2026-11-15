@@ -1,13 +1,15 @@
 from flask import Blueprint, request, jsonify
 from app.services.user_service import register_student
-from app.utils.security import token_required
+from app.models.user import get_all_users, update_user, delete_user, set_user_password
+from app.utils.security import token_required, hash_password
 
 users_bp = Blueprint('users', __name__, url_prefix='/api/users')
+
 
 @users_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    
+
     if not data:
         return jsonify({"error": "Invalid JSON payload"}), 400
 
@@ -21,8 +23,6 @@ def register():
         "user_id": user_id
     }), 201
 
-from app.models.user import get_all_users, update_user, delete_user, set_user_password
-from app.utils.security import hash_password
 
 @users_bp.route('/', methods=['GET'])
 @token_required
@@ -30,13 +30,14 @@ def get_users():
     users = get_all_users()
     return jsonify(users), 200
 
+
 @users_bp.route('/<int:user_id>', methods=['PUT'])
 @token_required
 def edit_user(user_id):
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON payload"}), 400
-    
+
     student_id = data.get('student_id')
     full_name = data.get('full_name')
     department = data.get('department')
@@ -56,6 +57,7 @@ def edit_user(user_id):
             return jsonify({"message": "User updated, but password reset failed."}), 200
 
     return jsonify({"message": "User updated successfully"}), 200
+
 
 @users_bp.route('/<int:user_id>', methods=['DELETE'])
 @token_required

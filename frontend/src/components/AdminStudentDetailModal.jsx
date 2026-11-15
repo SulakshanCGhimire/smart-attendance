@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminStudentDetailModal.css';
 
@@ -57,26 +57,32 @@ const AdminStudentDetailModal = ({ userId, onClose }) => {
   const [error, setError] = useState('');
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
 
-  const fetchDetail = useCallback(async (yearMonth) => {
-    setLoading(true);
-    setError('');
-    try {
-      const { startDate, endDate } = getMonthRange(yearMonth);
-      const res = await axios.get(
-        `${API_BASE}/student/${userId}/attendance?start_date=${startDate}&end_date=${endDate}`,
-        authHeader()
-      );
-      setReport(res.data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load student attendance.');
-    } finally {
-      setLoading(false);
-    }
-  }, [userId]);
-
   useEffect(() => {
-    fetchDetail(selectedMonth);
-  }, [fetchDetail, selectedMonth]);
+    let ignore = false;
+    const { startDate, endDate } = getMonthRange(selectedMonth);
+
+    axios.get(
+      `${API_BASE}/student/${userId}/attendance?start_date=${startDate}&end_date=${endDate}`,
+      authHeader()
+    )
+      .then((res) => {
+        if (!ignore) {
+          setReport(res.data);
+          setError('');
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          setError(err.response?.data?.error || 'Failed to load student attendance.');
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [userId, selectedMonth]);
 
   const currentMonth = new Date().toISOString().slice(0, 7);
 
@@ -102,7 +108,10 @@ const AdminStudentDetailModal = ({ userId, onClose }) => {
                 type="month"
                 value={selectedMonth}
                 max={currentMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
+                onChange={(e) => {
+                  setSelectedMonth(e.target.value);
+                  setLoading(true);
+                }}
               />
             </div>
 
